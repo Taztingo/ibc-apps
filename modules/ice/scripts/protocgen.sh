@@ -11,7 +11,7 @@ cd proto
 cd ..
 
 # move proto files to the right places
-cp -r github.com/cosmos/ibc-apps/modules/async-icq/v*/types/* types/
+cp -r github.com/cosmos/ibc-apps/modules/ice/types/* types/
 rm -rf github.com
 
 # go mod tidy

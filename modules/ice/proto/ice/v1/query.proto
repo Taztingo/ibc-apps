@@ -1,17 +1,26 @@
 syntax = "proto3";
 
-package icq.v1;
+package ice.v1;
 
-option go_package = "github.com/cosmos/ibc-apps/modules/async-icq/v7/types";
+option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
 import "google/api/annotations.proto";
-import "icq/v1/icq.proto";
+import "ice/v1/ice.proto";
 
 // Query provides defines the gRPC querier service.
 service Query {
-  // Params queries all parameters of the ICQ module.
+  // Params queries all parameters of the ICE module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/async-icq/v1/params";
+    option (google.api.http).get = "/ice/v1/params";
+  }
+  // Listeners queries all event listeners.
+  rpc Listeners(QueryListenersRequest) returns (QueryListenersResponse) {
+    option (google.api.http).get = "/ice/v1/listeners";
+  }
+  // RegisteredEvents queries all registered events.
+  rpc RegisteredEvents(QueryRegisteredEventsRequest)
+      returns (QueryRegisteredEventsResponse) {
+    option (google.api.http).get = "/ice/v1/registered";
   }
 }
 
@@ -22,4 +31,25 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params defines the parameters of the module.
   Params params = 1;
+}
+
+// QueryListenersRequest is the request type for the Query/Listeners RPC method.
+message QueryListenersRequest {}
+
+// QueryListenersResponse is the response type for the Query/Listeners RPC
+// method.
+message QueryListenersResponse {
+  // listeners defines the event listeners that the host is publishing to.
+  repeated EventListener listeners = 1;
+}
+
+// QueryRegisteredEventsRequest is the request type for the
+// Query/RegisteredEvents RPC method.
+message QueryRegisteredEventsRequest {}
+
+// QueryRegisteredEventsResponse is the response type for the
+// Query/RegisteredEvents RPC method.
+message QueryRegisteredEventsResponse {
+  // registered defines the event listeners that this chain has established.
+  repeated EventListener registered = 1;
 }

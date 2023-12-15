@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ice.v1;
 
-option go_package = "github.com/cosmos/ibc-apps/modules/ice/v7/types";
+option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
 import "gogoproto/gogo.proto";
 import "ice/v1/ice.proto";
@@ -10,5 +10,5 @@ import "ice/v1/ice.proto";
 // GenesisState defines the interchain query genesis state
 message GenesisState {
   string host_port = 1;
-  Params params = 4 [(gogoproto.nullable) = false];
+  Params params = 2 [ (gogoproto.nullable) = false ];
 }

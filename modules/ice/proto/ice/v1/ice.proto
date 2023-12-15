@@ -2,14 +2,18 @@ syntax = "proto3";
 
 package ice.v1;
 
-option go_package = "github.com/cosmos/ibc-apps/modules/ice/v7/types";
+option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
 import "gogoproto/gogo.proto";
 
 // Params defines the set of on-chain interchain query parameters.
 message Params {
   // host_enabled enables or disables the host submodule.
-  bool host_enabled = 2 [(gogoproto.moretags) = "yaml:\"host_enabled\""];
-  // allow_queries defines a list of query paths allowed to be queried on a host chain.
-  repeated string allow_queries = 3 [(gogoproto.moretags) = "yaml:\"allow_queries\""];
+  bool host_enabled = 1 [ (gogoproto.moretags) = "yaml:\"host_enabled\"" ];
+}
+
+// Params defines the set of on-chain interchain query parameters.
+message EventListener {
+  string event = 1 [ (gogoproto.moretags) = "yaml:\"event\"" ];
+  string channel_id = 2 [ (gogoproto.moretags) = "yaml:\"channel_id\"" ];
 }

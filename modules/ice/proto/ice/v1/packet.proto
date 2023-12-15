@@ -5,28 +5,30 @@ package ice.v1;
 import "gogoproto/gogo.proto";
 import "tendermint/abci/types.proto";
 
-option go_package = "github.com/cosmos/ibc-apps/modules/ice/v7/types";
+option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
-
-
-// InterchainQueryPacketData is comprised of raw query.
-message InterchainQueryPacketData {
-  bytes data = 1;
-  // optional memo
+// InterchainRegisterPacket is comprised of an event to listen for.
+message InterchainRegisterPacket {
+  // event defines the name of the event listen for.
+  string event = 1;
+  // memo is optional
   string memo = 2;
 }
 
-// InterchainQueryPacketAck is comprised of an ABCI query response with non-deterministic fields left empty (e.g. Codespace, Log, Info and ...).
-message InterchainQueryPacketAck {
-  bytes data = 1;
+// InterchainUnregisterPacket is comprised of raw query.
+message InterchainUnregisterPacket {
+  // event defines the name of the event to stop listening for.
+  string event = 1;
+  // memo is optional
+  string memo = 2;
 }
 
-// CosmosQuery contains a list of tendermint ABCI query requests. It should be used when sending queries to an SDK host chain.
-message CosmosQuery {
-  repeated tendermint.abci.RequestQuery requests = 1 [(gogoproto.nullable) = false];
-}
-
-// CosmosResponse contains a list of tendermint ABCI query responses. It should be used when receiving responses from an SDK host chain.
-message CosmosResponse {
-  repeated tendermint.abci.ResponseQuery responses = 1 [(gogoproto.nullable) = false];
+// InterchainEventPacket is comprised of raw query.
+message InterchainEventPacket {
+  // event defines the name of the event that occurred.
+  string event = 1;
+  // attributes defines additional optional event attributes.
+  bytes attributes = 2;
+  // memo is optional
+  string memo = 3;
 }
