@@ -8,8 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
-
-	abcitypes "github.com/cometbft/cometbft/abci/types"
 )
 
 // ModuleCdc references the global interchain queries module codec. Note, the codec
@@ -24,32 +22,6 @@ var (
 	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
-func SerializeCosmosQuery(reqs []abcitypes.RequestQuery) (bz []byte, err error) {
-	q := &CosmosQuery{
-		Requests: reqs,
-	}
-	return ModuleCdc.Marshal(q)
-}
-
-func DeserializeCosmosQuery(bz []byte) (reqs []abcitypes.RequestQuery, err error) {
-	var q CosmosQuery
-	err = ModuleCdc.Unmarshal(bz, &q)
-	return q.Requests, err
-}
-
-func SerializeCosmosResponse(resps []abcitypes.ResponseQuery) (bz []byte, err error) {
-	r := &CosmosResponse{
-		Responses: resps,
-	}
-	return ModuleCdc.Marshal(r)
-}
-
-func DeserializeCosmosResponse(bz []byte) (resps []abcitypes.ResponseQuery, err error) {
-	var r CosmosResponse
-	err = ModuleCdc.Unmarshal(bz, &r)
-	return r.Responses, err
-}
-
 func init() {
 	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
@@ -63,8 +35,8 @@ func init() {
 
 // RegisterLegacyAminoCodec registers concrete types on the LegacyAmino codec
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(Params{}, "icq/Params", nil)
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "icq/MsgUpdateParams")
+	cdc.RegisterConcrete(Params{}, "ice/Params", nil)
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "ice/MsgUpdateParams")
 }
 
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {

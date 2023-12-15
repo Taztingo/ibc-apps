@@ -12,11 +12,6 @@ func (k Keeper) IsHostEnabled(ctx sdk.Context) bool {
 	return k.GetParams(ctx).HostEnabled
 }
 
-// GetAllowQueries retrieves the host enabled query paths from the params
-func (k Keeper) GetAllowQueries(ctx sdk.Context) []string {
-	return k.GetParams(ctx).AllowQueries
-}
-
 // SetParams sets the module parameters.
 func (k Keeper) SetParams(ctx sdk.Context, p types.Params) error {
 	if err := p.Validate(); err != nil {

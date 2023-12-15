@@ -12,10 +12,6 @@ func (suite *KeeperTestSuite) TestInitGenesis() {
 		HostPort: TestPort,
 		Params: types.Params{
 			HostEnabled: false,
-			AllowQueries: []string{
-				"path/to/query1",
-				"path/to/query2",
-			},
 		},
 	}
 
@@ -26,10 +22,6 @@ func (suite *KeeperTestSuite) TestInitGenesis() {
 
 	expParams := types.NewParams(
 		false,
-		[]string{
-			"path/to/query1",
-			"path/to/query2",
-		},
 	)
 	params := simapp.GetSimApp(suite.chainA).ICQKeeper.GetParams(suite.chainA.GetContext())
 	suite.Require().Equal(expParams, params)

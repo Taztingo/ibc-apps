@@ -12,8 +12,6 @@ import (
 var (
 	// KeyHostEnabled is the store key for HostEnabled Params
 	KeyHostEnabled = []byte("HostEnabled")
-	// KeyAllowQueries is the store key for the AllowQueries Params
-	KeyAllowQueries = []byte("AllowQueries")
 )
 
 // ParamKeyTable type declaration for parameters
@@ -25,6 +23,5 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyHostEnabled, &p.HostEnabled, validateEnabled),
-		paramtypes.NewParamSetPair(KeyAllowQueries, &p.AllowQueries, validateAllowlist),
 	}
 }
