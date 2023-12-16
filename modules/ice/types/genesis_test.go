@@ -52,14 +52,35 @@ func (suite *TypesTestSuite) TestValidateGenesisState() {
 		{
 			"failed to validate - invalid host port",
 			func() {
-				genesisState = *types.NewHostGenesisState("p", types.DefaultParams())
+				genesisState = *types.NewGenesisState("p", types.DefaultParams(), []types.EventListener{}, []types.EventListener{})
 			},
 			false,
 		},
 		{
-			"failed to validate - invalid empty query path",
+			"failed to validate - invalid event name on registered",
 			func() {
-				genesisState = *types.NewHostGenesisState("port", types.NewParams(true, []string{" "}))
+				genesisState = *types.NewGenesisState("port", types.NewParams(true), []types.EventListener{}, []types.EventListener{})
+			},
+			false,
+		},
+		{
+			"failed to validate - invalid channel on registered",
+			func() {
+				genesisState = *types.NewGenesisState("port", types.NewParams(true), []types.EventListener{}, []types.EventListener{})
+			},
+			false,
+		},
+		{
+			"failed to validate - invalid event name on listeners",
+			func() {
+				genesisState = *types.NewGenesisState("port", types.NewParams(true), []types.EventListener{}, []types.EventListener{})
+			},
+			false,
+		},
+		{
+			"failed to validate - invalid channel on listeners",
+			func() {
+				genesisState = *types.NewGenesisState("port", types.NewParams(true), []types.EventListener{}, []types.EventListener{})
 			},
 			false,
 		},
