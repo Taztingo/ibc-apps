@@ -14,7 +14,7 @@ message GenesisState {
   // params defines the configurable params used by the module.
   Params params = 2 [ (gogoproto.nullable) = false ];
   // registered defines the events that the module is registered to.
-  repeated EventListener registered = 3;
+  repeated EventListener registered = 3 [ (gogoproto.nullable) = false ];
   // listeners defines the events that other chains are listening for.
-  repeated EventListener listeners = 4;
+  repeated EventListener listeners = 4 [ (gogoproto.nullable) = false ];
 }

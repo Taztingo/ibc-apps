@@ -2,13 +2,13 @@ package types
 
 const (
 	// ModuleName defines the interchain query module name
-	ModuleName = "interchainquery"
+	ModuleName = "interchainevents"
 
-	// PortID is the default port id that the interchain query module binds to
-	PortID = "icqhost"
+	// PortID is the default port id that the interchain events module binds to
+	PortID = "icehost"
 
-	// Version defines the current version for interchain query
-	Version = "icq-1"
+	// Version defines the current version for interchain events
+	Version = "ice-1"
 
 	// StoreKey is the store key string for interchain query
 	StoreKey = ModuleName
@@ -26,14 +26,3 @@ var (
 	// PortKey defines the key to store the port ID in store
 	PortKey = []byte{0x01}
 )
-
-// ContainsQueryPath returns true if the path is present in allowQueries, otherwise false
-func ContainsQueryPath(allowQueries []string, path string) bool {
-	for _, v := range allowQueries {
-		if v == path {
-			return true
-		}
-	}
-
-	return false
-}
