@@ -110,7 +110,7 @@ func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) err
 
 	listeners := k.GetListeners(ctx)
 	for _, listener := range listeners {
-		if err := k.SendEvent(ctx, event, listener.ChannelId); err != nil {
+		if err := k.SendEventPacket(ctx, event, listener.ChannelId); err != nil {
 			// Log here
 		}
 	}
@@ -118,6 +118,14 @@ func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) err
 	return nil
 }
 
-func (k Keeper) SendEvent(ctx sdk.Context, event types.InterchainEvent, channel string) error {
+func (k Keeper) SendEventPacket(ctx sdk.Context, event types.InterchainEvent, channel string) error {
+	return nil
+}
+
+func (k Keeper) SendRegisterEventPacket(ctx sdk.Context, event types.EventStream) error {
+	return nil
+}
+
+func (k Keeper) SendUnregisterEventPacket(ctx sdk.Context, event types.EventStream) error {
 	return nil
 }

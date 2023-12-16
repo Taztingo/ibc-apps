@@ -43,7 +43,7 @@ func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream
 
 	k.SetDownstreamEvent(ctx, event)
 
-	return nil
+	return k.SendRegisterEventPacket(ctx, event)
 }
 
 // UnregisterDownstreamEvent removes a stream to listen to events from.
@@ -56,9 +56,11 @@ func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStre
 		return types.ErrDownstreamEventNotFound
 	}
 
+	// Check if channel exists
+
 	k.RemoveDownstreamEvent(ctx, event.EventName)
 
-	return nil
+	return k.SendUnregisterEventPacket(ctx, event)
 }
 
 // RegisterUpstreamEvent adds a stream to broadcast events to.
@@ -70,8 +72,6 @@ func (k Keeper) RegisterUpstreamEvent(ctx sdk.Context, event types.EventStream) 
 	if k.HasDownstreamEvent(ctx, event.EventName) {
 		return types.ErrUpstreamEventFound
 	}
-
-	// Check if channel exists
 
 	k.SetUpstreamEvent(ctx, event)
 
