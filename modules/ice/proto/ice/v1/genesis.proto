@@ -7,8 +7,14 @@ option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 import "gogoproto/gogo.proto";
 import "ice/v1/ice.proto";
 
-// GenesisState defines the interchain query genesis state
+// GenesisState defines the interchain events genesis state
 message GenesisState {
-  string host_port = 1;
+  // port defines the port that the module is listening on.
+  string port = 1;
+  // params defines the configurable params used by the module.
   Params params = 2 [ (gogoproto.nullable) = false ];
+  // registered defines the events that the module is registered to.
+  repeated EventListener registered = 3;
+  // listeners defines the events that other chains are listening for.
+  repeated EventListener listeners = 4;
 }
