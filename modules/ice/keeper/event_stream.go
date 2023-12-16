@@ -3,6 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/ibc-apps/modules/ice/types"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 )
 
 // GetListeners returns the streams listening for events from this chain.
@@ -30,7 +31,7 @@ func (k Keeper) GetRegisteredEvents(ctx sdk.Context) []types.EventStream {
 }
 
 // RegisterDownstreamEvent adds a stream to listen to events from.
-func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream) error {
+func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream, timeoutHeight clienttypes.Height, timeoutTimestamp uint64) error {
 	if err := event.Validate(); err != nil {
 		return err
 	}
@@ -43,11 +44,12 @@ func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream
 
 	k.SetDownstreamEvent(ctx, event)
 
-	return k.SendRegisterEventPacket(ctx, event)
+	_, err := k.SendRegisterEventPacket(ctx, event, "ice-listener", timeoutHeight, timeoutTimestamp)
+	return err
 }
 
 // UnregisterDownstreamEvent removes a stream to listen to events from.
-func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStream) error {
+func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStream, timeoutHeight clienttypes.Height, timeoutTimestamp uint64) error {
 	if err := event.Validate(); err != nil {
 		return err
 	}
@@ -60,7 +62,8 @@ func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStre
 
 	k.RemoveDownstreamEvent(ctx, event.EventName)
 
-	return k.SendUnregisterEventPacket(ctx, event)
+	_, err := k.SendUnregisterEventPacket(ctx, event, "ice-listener", timeoutHeight, timeoutTimestamp)
+	return err
 }
 
 // RegisterUpstreamEvent adds a stream to broadcast events to.

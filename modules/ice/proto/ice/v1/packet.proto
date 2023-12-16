@@ -4,6 +4,7 @@ package ice.v1;
 
 import "gogoproto/gogo.proto";
 import "tendermint/abci/types.proto";
+import "ice/v1/ice.proto";
 
 option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
@@ -26,9 +27,7 @@ message InterchainUnregisterPacket {
 // InterchainEventPacket is comprised of raw query.
 message InterchainEventPacket {
   // event defines the name of the event that occurred.
-  string event = 1;
-  // attributes defines additional optional event attributes.
-  bytes attributes = 2;
+  InterchainEvent event = 1 [ (gogoproto.nullable) = false ];
   // memo is optional
   string memo = 3;
 }

@@ -44,7 +44,7 @@ func (im IBCModule) OnChanOpenInit(
 		return "", types.ErrHostDisabled
 	}
 
-	if err := ValidateICQChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
+	if err := ValidateICEChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
 		return "", err
 	}
 
@@ -64,7 +64,7 @@ func (im IBCModule) OnChanOpenInit(
 	return version, nil
 }
 
-func ValidateICQChannelParams(
+func ValidateICEChannelParams(
 	ctx sdk.Context,
 	keeper keeper.Keeper,
 	order channeltypes.Order,
@@ -97,7 +97,7 @@ func (im IBCModule) OnChanOpenTry(
 		return "", types.ErrHostDisabled
 	}
 
-	if err := ValidateICQChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
+	if err := ValidateICEChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
 		return "", err
 	}
 
