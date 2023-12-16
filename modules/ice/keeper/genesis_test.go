@@ -9,7 +9,7 @@ func (suite *KeeperTestSuite) TestInitGenesis() {
 	suite.SetupTest()
 
 	genesisState := types.GenesisState{
-		HostPort: TestPort,
+		Port: TestPort,
 		Params: types.Params{
 			HostEnabled: false,
 		},
@@ -32,7 +32,7 @@ func (suite *KeeperTestSuite) TestExportGenesis() {
 
 	genesisState := simapp.GetSimApp(suite.chainA).ICQKeeper.ExportGenesis(suite.chainA.GetContext())
 
-	suite.Require().Equal(types.PortID, genesisState.GetHostPort())
+	suite.Require().Equal(types.PortID, genesisState.GetPort())
 
 	expParams := types.DefaultParams()
 	suite.Require().Equal(expParams, genesisState.GetParams())

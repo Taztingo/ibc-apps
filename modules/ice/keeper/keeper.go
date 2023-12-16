@@ -102,3 +102,13 @@ func (k Keeper) GetAppVersion(ctx sdk.Context, portID, channelID string) (string
 func (k Keeper) GetAuthority() string {
 	return k.authority
 }
+
+// GetListeners returns the module's listeners.
+func (k Keeper) GetListeners(_ sdk.Context) []types.EventListener {
+	return []types.EventListener{}
+}
+
+// GetRegisteredEvents returns the module's registered events.
+func (k Keeper) GetRegisteredEvents(_ sdk.Context) []types.EventListener {
+	return []types.EventListener{}
+}

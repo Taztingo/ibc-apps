@@ -5,6 +5,7 @@ package ice.v1;
 option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
 import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
 import "ice/v1/ice.proto";
 
 // Query provides defines the gRPC querier service.
@@ -40,7 +41,7 @@ message QueryListenersRequest {}
 // method.
 message QueryListenersResponse {
   // listeners defines the event listeners that the host is publishing to.
-  repeated EventListener listeners = 1;
+  repeated EventListener listeners = 1 [ (gogoproto.nullable) = false ];
 }
 
 // QueryRegisteredEventsRequest is the request type for the
@@ -51,5 +52,5 @@ message QueryRegisteredEventsRequest {}
 // Query/RegisteredEvents RPC method.
 message QueryRegisteredEventsResponse {
   // registered defines the event listeners that this chain has established.
-  repeated EventListener registered = 1;
+  repeated EventListener registered = 1 [ (gogoproto.nullable) = false ];
 }
