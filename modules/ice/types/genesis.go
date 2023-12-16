@@ -9,13 +9,13 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		Port:       PortID,
 		Params:     DefaultParams(),
-		Registered: []EventListener{},
-		Listeners:  []EventListener{},
+		Registered: []EventStream{},
+		Listeners:  []EventStream{},
 	}
 }
 
 // NewGenesisState creates a returns a new GenesisState instance
-func NewGenesisState(hostPort string, params Params, registered, listeners []EventListener) *GenesisState {
+func NewGenesisState(hostPort string, params Params, registered, listeners []EventStream) *GenesisState {
 	return &GenesisState{
 		Port:       hostPort,
 		Params:     params,

@@ -40,8 +40,8 @@ message QueryListenersRequest {}
 // QueryListenersResponse is the response type for the Query/Listeners RPC
 // method.
 message QueryListenersResponse {
-  // listeners defines the event listeners that the host is publishing to.
-  repeated EventListener listeners = 1 [ (gogoproto.nullable) = false ];
+  // listeners defines the event stream that the host is publishing events to.
+  repeated EventStream listeners = 1 [ (gogoproto.nullable) = false ];
 }
 
 // QueryRegisteredEventsRequest is the request type for the
@@ -51,6 +51,6 @@ message QueryRegisteredEventsRequest {}
 // QueryRegisteredEventsResponse is the response type for the
 // Query/RegisteredEvents RPC method.
 message QueryRegisteredEventsResponse {
-  // registered defines the event listeners that this chain has established.
-  repeated EventListener registered = 1 [ (gogoproto.nullable) = false ];
+  // registered defines the event stream that this chain is listening for events on.
+  repeated EventStream registered = 1 [ (gogoproto.nullable) = false ];
 }

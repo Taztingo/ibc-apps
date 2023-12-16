@@ -15,14 +15,22 @@ func (k Keeper) GetRegisteredEvents(_ sdk.Context) []types.EventStream {
 	return []types.EventStream{}
 }
 
-func (k Keeper) RegisterEvent(ctx sdk.Context, event, channel string) {
+func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream) {
 
 }
 
-func (k Keeper) UnregisterEvent(ctx sdk.Context, event, channel string) {
+func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStream) {
 
 }
 
-func (k Keeper) PublishEvent(ctx sdk.Context, event string, attributes ...string) {
+func (k Keeper) RegisterUpstreamEvent(ctx sdk.Context, event types.EventStream) {
+
+}
+
+func (k Keeper) UnregisterUpstreamEvent(ctx sdk.Context, event types.EventStream) {
+
+}
+
+func (k Keeper) PublishEvent(ctx sdk.Context, event types.InterchainEvent) {
 
 }

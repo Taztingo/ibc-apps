@@ -6,14 +6,26 @@ option go_package = "github.com/cosmos/ibc-apps/modules/ice/types";
 
 import "gogoproto/gogo.proto";
 
-// Params defines the set of on-chain interchain query parameters.
+// Params defines the set of on-chain interchain event parameters.
 message Params {
   // host_enabled enables or disables the host submodule.
   bool host_enabled = 1 [ (gogoproto.moretags) = "yaml:\"host_enabled\"" ];
 }
 
-// Params defines the set of on-chain interchain query parameters.
-message EventListener {
-  string event = 1 [ (gogoproto.moretags) = "yaml:\"event\"" ];
+// EventStream defines a stream to either send or receive events on.
+message EventStream {
+  string event_name = 1 [ (gogoproto.moretags) = "yaml:\"event_name\"" ];
   string channel_id = 2 [ (gogoproto.moretags) = "yaml:\"channel_id\"" ];
+}
+
+// InterchainEvent defines an event to publish to subscribers.
+message InterchainEvent {
+  string name = 1 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  repeated InterchainEventAttribute attributes = 2 [ (gogoproto.moretags) = "yaml:\"attributes\"" ];
+}
+
+// InterchainEventAttributes defines the attributes for an InterchainEvent.
+message InterchainEventAttribute {
+  string name = 1 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string value = 2 [ (gogoproto.moretags) = "yaml:\"value\"" ];
 }
