@@ -27,14 +27,20 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
 		panic(fmt.Sprintf("could not set params: %v", err))
 	}
 
-	// We need to set the registered
-	// We need to set the listeners
+	for _, registered := range state.Registered {
+		k.SetDownstreamEvent(ctx, registered)
+	}
+	for _, listener := range state.Listeners {
+		k.SetUpstreamEvent(ctx, listener)
+	}
 }
 
 // ExportGenesis exports icq module's portID and denom trace info into its genesis state.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	return &types.GenesisState{
-		Port:   k.GetPort(ctx),
-		Params: k.GetParams(ctx),
+		Port:       k.GetPort(ctx),
+		Params:     k.GetParams(ctx),
+		Registered: k.GetRegisteredEvents(ctx),
+		Listeners:  k.GetListeners(ctx),
 	}
 }
