@@ -102,3 +102,22 @@ func (k Keeper) authenticateQuery(ctx sdk.Context, q abci.RequestQuery) error {
 
 	return nil
 }
+
+func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) error {
+	if err := event.Validate(); err != nil {
+		return err
+	}
+
+	listeners := k.GetListeners(ctx)
+	for _, listener := range listeners {
+		if err := k.SendEvent(ctx, event, listener.ChannelId); err != nil {
+			// Log here
+		}
+	}
+
+	return nil
+}
+
+func (k Keeper) SendEvent(ctx sdk.Context, event types.InterchainEvent, channel string) error {
+	return nil
+}

@@ -28,17 +28,17 @@ var (
 	// DownstreamEventPrefix defines the prefix all downstream events are stored with in the store
 	DownstreamEventPrefix = []byte{0x02}
 	// UpstreamEventPrefix defines the prefix all upstream events are stored with in the store
-	UpstreamEventPrefix = []byte{0x02}
+	UpstreamEventPrefix = []byte{0x03}
 )
 
-func GetUpstreamEventKey(event EventStream) []byte {
+func GetUpstreamEventKey(eventName string) []byte {
 	key := UpstreamEventPrefix
-	key = append(key, []byte(event.EventName)...)
+	key = append(key, []byte(eventName)...)
 	return key
 }
 
-func GetDownstreamEventKey(event EventStream) []byte {
+func GetDownstreamEventKey(eventName string) []byte {
 	key := DownstreamEventPrefix
-	key = append(key, []byte(event.EventName)...)
+	key = append(key, []byte(eventName)...)
 	return key
 }
