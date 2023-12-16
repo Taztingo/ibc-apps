@@ -1,8 +1,8 @@
 package upgrades
 
 import (
-	"github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
-	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
+	"github.com/cosmos/ibc-apps/modules/ice/keeper"
+	icqtypes "github.com/cosmos/ibc-apps/modules/ice/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"

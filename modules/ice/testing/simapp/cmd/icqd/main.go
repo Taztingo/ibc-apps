@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/cosmos/ibc-apps/modules/async-icq/v7/testing/simapp"
+	"github.com/cosmos/ibc-apps/modules/ice/testing/simapp"
 
 	"cosmossdk.io/log"
 

@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	icq "github.com/cosmos/ibc-apps/modules/async-icq/v7"
-	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
-	upgrades "github.com/cosmos/ibc-apps/modules/async-icq/v7/testing/simapp/upgrades"
-	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
+	icq "github.com/cosmos/ibc-apps/modules/ice"
+	icqkeeper "github.com/cosmos/ibc-apps/modules/ice/keeper"
+	upgrades "github.com/cosmos/ibc-apps/modules/ice/testing/simapp/upgrades"
+	icqtypes "github.com/cosmos/ibc-apps/modules/ice/types"
 	"github.com/spf13/cast"
 	"github.com/stretchr/testify/require"
 

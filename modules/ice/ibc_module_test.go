@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/cosmos/gogoproto/proto"
-	icq "github.com/cosmos/ibc-apps/modules/async-icq/v7"
-	"github.com/cosmos/ibc-apps/modules/async-icq/v7/testing/simapp"
-	"github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
+	icq "github.com/cosmos/ibc-apps/modules/ice"
+	"github.com/cosmos/ibc-apps/modules/ice/testing/simapp"
+	"github.com/cosmos/ibc-apps/modules/ice/types"
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

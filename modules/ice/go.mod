@@ -1,4 +1,4 @@
-module github.com/cosmos/ibc-apps/modules/async-icq/v7
+module github.com/cosmos/ibc-apps/modules/ice
 
 go 1.20
 
@@ -32,6 +32,7 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2
 	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/cosmos/gogoproto v1.4.10
+	github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.1.1
 	github.com/cosmos/ibc-go/v7 v7.3.0
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
@@ -192,6 +193,3 @@ require (
 	pgregory.net/rapid v0.5.5 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-// see https://github.com/cosmos/ibc-apps/pull/142
-retract v7.1.0
