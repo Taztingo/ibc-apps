@@ -127,9 +127,9 @@ func (im IBCModule) OnChanOpenAck(
 	_ string,
 	counterpartyVersion string,
 ) error {
-	if !im.keeper.IsHostEnabled(ctx) {
+	/*if !im.keeper.IsHostEnabled(ctx) {
 		return types.ErrHostDisabled
-	}
+	}*/
 
 	if counterpartyVersion != types.Version {
 		return errors.Wrapf(types.ErrInvalidVersion, "got %s, expected %s", counterpartyVersion, types.Version)
@@ -192,19 +192,26 @@ func (im IBCModule) OnRecvPacket(
 
 // OnAcknowledgementPacket implements the IBCModule interface
 func (im IBCModule) OnAcknowledgementPacket(
-	_ sdk.Context,
-	_ channeltypes.Packet,
-	_ []byte,
+	ctx sdk.Context,
+	packet channeltypes.Packet,
+	acknowledgement []byte,
 	_ sdk.AccAddress,
 ) error {
-	return errors.Wrap(types.ErrInvalidChannelFlow, "cannot receive acknowledgement on a host channel end, a host chain does not send a packet over the channel")
+	var ack channeltypes.Acknowledgement
+	if err := types.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
+		return errors.Wrapf(types.ErrInvalidAck, "cannot unmarshal ice packet acknowledgement: %v", err)
+	}
+
+	return im.keeper.OnAcknowledgementPacket(ctx, packet, ack)
+	//return errors.Wrap(types.ErrInvalidChannelFlow, "cannot receive acknowledgement on a host channel end, a host chain does not send a packet over the channel")
 }
 
 // OnTimeoutPacket implements the IBCModule interface
 func (im IBCModule) OnTimeoutPacket(
-	_ sdk.Context,
-	_ channeltypes.Packet,
+	ctx sdk.Context,
+	packet channeltypes.Packet,
 	_ sdk.AccAddress,
 ) error {
-	return errors.Wrap(types.ErrInvalidChannelFlow, "cannot cause a packet timeout on a host channel end, a host chain does not send a packet over the channel")
+	return im.keeper.OnTimeoutPacket(ctx, packet)
+	//return errors.Wrap(types.ErrInvalidChannelFlow, "cannot cause a packet timeout on a host channel end, a host chain does not send a packet over the channel")
 }

@@ -44,6 +44,7 @@ func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream
 
 	k.SetDownstreamEvent(ctx, event)
 
+	// Should not always be done
 	_, err := k.SendRegisterEventPacket(ctx, event, "ice-listener", timeoutHeight, timeoutTimestamp)
 	return err
 }

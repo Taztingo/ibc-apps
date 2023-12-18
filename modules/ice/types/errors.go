@@ -14,4 +14,5 @@ var (
 	ErrUpstreamEventNotFound   = sdkerrors.Register(ModuleName, 7, "upstream event does not exist")
 	ErrUpstreamEventFound      = sdkerrors.Register(ModuleName, 8, "upstream event already exists")
 	ErrDownstreamEventFound    = sdkerrors.Register(ModuleName, 9, "downstream event already exists")
+	ErrInvalidAck              = sdkerrors.Register(ModuleName, 10, "invalid ack data")
 )

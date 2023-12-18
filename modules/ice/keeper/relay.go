@@ -14,7 +14,7 @@ import (
 )
 
 // OnRecvPacket handles a given interchain queries packet on a destination host chain.
-// If the transaction is successfully executed, the transaction response bytes will be returned.
+// If the transactFion is successfully executed, the transaction response bytes will be returned.
 func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
 
 	if ack, err := k.AttemptRecvEventPacket(ctx, packet); err == nil {
@@ -30,6 +30,24 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byt
 	return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
 }
 
+func (k Keeper) OnAcknowledgementPacket(ctx sdk.Context, packet channeltypes.Packet, ack channeltypes.Acknowledgement) error {
+	switch ack.Response.(type) {
+	case *channeltypes.Acknowledgement_Result:
+		// Nothing needs to be done
+	case *channeltypes.Acknowledgement_Error:
+		k.AttemptRollbackRegisterEventPacket(ctx, packet)
+		k.AttemptRollbackUnregisterEventPacket(ctx, packet)
+	}
+
+	return nil
+}
+
+func (k Keeper) OnTimeoutPacket(ctx sdk.Context, packet channeltypes.Packet) error {
+	k.AttemptRollbackRegisterEventPacket(ctx, packet)
+	k.AttemptRollbackUnregisterEventPacket(ctx, packet)
+	return nil
+}
+
 func (k Keeper) AttemptRecvEventPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
 	var data types.InterchainEventPacket
 
@@ -41,6 +59,8 @@ func (k Keeper) AttemptRecvEventPacket(ctx sdk.Context, packet channeltypes.Pack
 	// Do Logic
 	// What do we want to do when we receive an event packet?
 	// We either use the callback middleware or we handle callbacks ourselves
+	// If we don't do it ourselves then Callback Middleware needs information about the packet.
+	// We could store last processed packet type
 
 	return types.NewInterchainPacketAck(types.InterchainPacketAck_EVENT).GetBytes(), nil
 }
@@ -63,6 +83,30 @@ func (k Keeper) AttemptRegisterEventPacket(ctx sdk.Context, packet channeltypes.
 	}
 
 	return types.NewInterchainPacketAck(types.InterchainPacketAck_REGISTER).GetBytes(), nil
+}
+
+func (k Keeper) AttemptRollbackRegisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) bool {
+	var data types.InterchainRegisterPacket
+	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		return false
+	}
+
+	k.RemoveDownstreamEvent(ctx, data.Event)
+	return true
+}
+
+func (k Keeper) AttemptRollbackUnregisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) bool {
+	var data types.InterchainRegisterPacket
+	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		return false
+	}
+
+	event := types.EventStream{
+		EventName: data.Event,
+		ChannelId: packet.DestinationChannel,
+	}
+	k.SetDownstreamEvent(ctx, event)
+	return true
 }
 
 func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
