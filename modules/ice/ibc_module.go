@@ -40,9 +40,9 @@ func (im IBCModule) OnChanOpenInit(
 	_ channeltypes.Counterparty,
 	version string,
 ) (string, error) {
-	if !im.keeper.IsHostEnabled(ctx) {
+	/*if !im.keeper.IsHostEnabled(ctx) {
 		return "", types.ErrHostDisabled
-	}
+	}*/
 
 	if err := ValidateICEChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
 		return "", err
@@ -93,9 +93,9 @@ func (im IBCModule) OnChanOpenTry(
 	_ channeltypes.Counterparty,
 	counterpartyVersion string,
 ) (string, error) {
-	if !im.keeper.IsHostEnabled(ctx) {
+	/*if !im.keeper.IsHostEnabled(ctx) {
 		return "", types.ErrHostDisabled
-	}
+	}*/
 
 	if err := ValidateICEChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
 		return "", err
@@ -143,9 +143,9 @@ func (im IBCModule) OnChanOpenConfirm(
 	_ string,
 	_ string,
 ) error {
-	if !im.keeper.IsHostEnabled(ctx) {
+	/*if !im.keeper.IsHostEnabled(ctx) {
 		return types.ErrHostDisabled
-	}
+	}*/
 	return nil
 }
 
@@ -174,9 +174,9 @@ func (im IBCModule) OnRecvPacket(
 	packet channeltypes.Packet,
 	_ sdk.AccAddress,
 ) ibcexported.Acknowledgement {
-	if !im.keeper.IsHostEnabled(ctx) {
+	/*if !im.keeper.IsHostEnabled(ctx) {
 		return channeltypes.NewErrorAcknowledgement(types.ErrHostDisabled)
-	}
+	}*/
 
 	txResponse, err := im.keeper.OnRecvPacket(ctx, packet)
 	if err != nil {

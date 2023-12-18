@@ -33,3 +33,13 @@ func (packet InterchainEventPacket) ValidateBasic() error {
 func (packet InterchainEventPacket) GetBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&packet))
 }
+
+func NewInterchainPacketAck(packetType InterchainPacketAck_Type) InterchainPacketAck {
+	return InterchainPacketAck{
+		Type: packetType,
+	}
+}
+
+func (ack InterchainPacketAck) GetBytes() []byte {
+	return ModuleCdc.MustMarshalJSON(&ack)
+}

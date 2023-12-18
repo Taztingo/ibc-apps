@@ -15,57 +15,74 @@ import (
 
 // OnRecvPacket handles a given interchain queries packet on a destination host chain.
 // If the transaction is successfully executed, the transaction response bytes will be returned.
-func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) error {
+func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
 
-	k.AttemptRecvEventPacket(ctx, packet)
-	k.AttemptRegisterEventPacket(ctx, packet)
-	k.AttemptUnregisterEventPacket(ctx, packet)
+	if ack, err := k.AttemptRecvEventPacket(ctx, packet); err == nil {
+		return ack, err
+	}
+	if ack, err := k.AttemptRegisterEventPacket(ctx, packet); err == nil {
+		return ack, err
+	}
+	if ack, err := k.AttemptUnregisterEventPacket(ctx, packet); err == nil {
+		return ack, err
+	}
 
-	return nil
+	return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
 }
 
-func (k Keeper) AttemptRecvEventPacket(ctx sdk.Context, packet channeltypes.Packet) error {
+func (k Keeper) AttemptRecvEventPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
 	var data types.InterchainEventPacket
 
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		// UnmarshalJSON errors are indeterminate and therefore are not wrapped and included in failed acks
-		return errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
+		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
 	}
 
 	// Do Logic
 	// What do we want to do when we receive an event packet?
+	// We either use the callback middleware or we handle callbacks ourselves
 
-	return nil
+	return types.NewInterchainPacketAck(types.InterchainPacketAck_EVENT).GetBytes(), nil
 }
 
-func (k Keeper) AttemptRegisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) error {
+func (k Keeper) AttemptRegisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
 	var data types.InterchainRegisterPacket
 
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		// UnmarshalJSON errors are indeterminate and therefore are not wrapped and included in failed acks
-		return errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICQ packet data")
+		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICQ packet data")
 	}
 
 	event := types.EventStream{
 		EventName: data.Event,
 		ChannelId: packet.DestinationChannel,
 	}
-	return k.RegisterUpstreamEvent(ctx, event)
+	err := k.RegisterUpstreamEvent(ctx, event)
+	if err != nil {
+		return nil, err
+	}
+
+	return types.NewInterchainPacketAck(types.InterchainPacketAck_REGISTER).GetBytes(), nil
 }
 
-func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) error {
+func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byte, error) {
 	var data types.InterchainUnregisterPacket
 
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		// UnmarshalJSON errors are indeterminate and therefore are not wrapped and included in failed acks
-		return errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICQ packet data")
+		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICQ packet data")
 	}
 
 	event := types.EventStream{
 		EventName: data.Event,
 		ChannelId: packet.DestinationChannel,
 	}
-	return k.UnregisterUpstreamEvent(ctx, event)
+	err := k.UnregisterUpstreamEvent(ctx, event)
+	if err != nil {
+		return nil, err
+	}
+
+	return types.NewInterchainPacketAck(types.InterchainPacketAck_UNREGISTER).GetBytes(), nil
 }
 
 func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) error {
@@ -75,7 +92,7 @@ func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) err
 
 	listeners := k.GetListeners(ctx)
 	for _, listener := range listeners {
-		_, err := k.SendEventPacket(ctx, event, listener.ChannelId, "ice-host", clienttypes.ZeroHeight(), 0)
+		_, err := k.SendEventPacket(ctx, event, listener.ChannelId, types.PortID, clienttypes.ZeroHeight(), 0)
 		if err != nil {
 			// Log here
 		}

@@ -31,3 +31,14 @@ message InterchainEventPacket {
   // memo is optional
   string memo = 3;
 }
+
+// InterchainRegisterPacket is comprised of an event to listen for.
+message InterchainPacketAck {
+  enum Type {
+    REGISTER = 0;
+    UNREGISTER = 1;
+    EVENT = 2;
+  }
+
+  Type type = 1;
+}
