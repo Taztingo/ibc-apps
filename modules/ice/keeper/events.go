@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/cosmos/ibc-apps/modules/ice/types"
 	icqtypes "github.com/cosmos/ibc-apps/modules/ice/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,4 +19,14 @@ func EmitWriteErrorAcknowledgementEvent(ctx sdk.Context, packet exported.PacketI
 			sdk.NewAttribute(icqtypes.AttributeKeyHostChannelID, packet.GetDestChannel()),
 		),
 	)
+}
+
+func EmitInterchainEvent(ctx sdk.Context, ice types.InterchainEvent, chainID string) {
+	attributes := make([]sdk.Attribute, len(ice.Attributes)+1)
+	attributes = append(attributes, sdk.NewAttribute("chain-id", chainID))
+	for _, attribute := range ice.Attributes {
+		attributes = append(attributes, sdk.NewAttribute(attribute.Name, attribute.Value))
+	}
+	event := sdk.NewEvent(ice.Name, attributes...)
+	ctx.EventManager().EmitEvent(event)
 }

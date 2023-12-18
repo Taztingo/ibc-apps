@@ -28,6 +28,7 @@ type ChannelKeeper interface {
 	GetChannel(ctx sdk.Context, srcPort, srcChan string) (channel channeltypes.Channel, found bool)
 	GetNextSequenceSend(ctx sdk.Context, portID, channelID string) (uint64, bool)
 	GetConnection(ctx sdk.Context, connectionID string) (ibcexported.ConnectionI, error)
+	GetChannelClientState(ctx sdk.Context, portID, channelID string) (string, ibcexported.ClientState, error)
 }
 
 // PortKeeper defines the expected IBC port keeper

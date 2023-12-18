@@ -11,6 +11,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	tendermintclient "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 )
 
 // OnRecvPacket handles a given interchain queries packet on a destination host chain.
@@ -56,11 +57,11 @@ func (k Keeper) AttemptRecvEventPacket(ctx sdk.Context, packet channeltypes.Pack
 		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
 	}
 
-	// Do Logic
-	// What do we want to do when we receive an event packet?
-	// We either use the callback middleware or we handle callbacks ourselves
-	// If we don't do it ourselves then Callback Middleware needs information about the packet.
-	// We could store last processed packet type
+	// We emit the event
+	chainID := k.GetChainID(ctx, packet.SourcePort, packet.SourceChannel)
+	EmitInterchainEvent(ctx, data.Event, chainID)
+
+	// We leave it up to the Callback module to handle the rest
 
 	return types.NewInterchainPacketAck(types.InterchainPacketAck_EVENT).GetBytes(), nil
 }
@@ -205,4 +206,18 @@ func (k Keeper) SendUnregisterEventPacket(ctx sdk.Context, event types.EventStre
 	}
 
 	return sequence, nil
+}
+
+func (k Keeper) GetChainID(ctx sdk.Context, ibcPort, ibcChannel string) string {
+	chainID := "unknown"
+	_, clientState, err := k.channelKeeper.GetChannelClientState(ctx, ibcPort, ibcChannel)
+	if err != nil {
+		return chainID
+	}
+
+	tmClientState, ok := clientState.(*tendermintclient.ClientState)
+	if ok {
+		return tmClientState.ChainId
+	}
+	return chainID
 }
