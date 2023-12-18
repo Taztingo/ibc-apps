@@ -31,14 +31,16 @@ var (
 	UpstreamEventPrefix = []byte{0x03}
 )
 
-func GetUpstreamEventKey(eventName string) []byte {
+func GetUpstreamEventKey(eventName, channelID string) []byte {
 	key := UpstreamEventPrefix
 	key = append(key, []byte(eventName)...)
+	key = append(key, []byte(channelID)...)
 	return key
 }
 
-func GetDownstreamEventKey(eventName string) []byte {
+func GetDownstreamEventKey(eventName, channelID string) []byte {
 	key := DownstreamEventPrefix
 	key = append(key, []byte(eventName)...)
+	key = append(key, []byte(channelID)...)
 	return key
 }

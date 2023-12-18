@@ -36,7 +36,7 @@ func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream
 		return err
 	}
 
-	if k.HasDownstreamEvent(ctx, event.EventName) {
+	if k.HasDownstreamEvent(ctx, event.EventName, event.ChannelId) {
 		return types.ErrDownstreamEventFound
 	}
 
@@ -55,13 +55,13 @@ func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStre
 		return err
 	}
 
-	if !k.HasDownstreamEvent(ctx, event.EventName) {
+	if !k.HasDownstreamEvent(ctx, event.EventName, event.ChannelId) {
 		return types.ErrDownstreamEventNotFound
 	}
 
 	// Check if channel exists
 
-	k.RemoveDownstreamEvent(ctx, event.EventName)
+	k.RemoveDownstreamEvent(ctx, event.EventName, event.ChannelId)
 
 	_, err := k.SendUnregisterEventPacket(ctx, event, "ice-listener", timeoutHeight, timeoutTimestamp)
 	return err
@@ -73,7 +73,7 @@ func (k Keeper) RegisterUpstreamEvent(ctx sdk.Context, event types.EventStream) 
 		return err
 	}
 
-	if k.HasDownstreamEvent(ctx, event.EventName) {
+	if k.HasDownstreamEvent(ctx, event.EventName, event.ChannelId) {
 		return types.ErrUpstreamEventFound
 	}
 
@@ -88,11 +88,11 @@ func (k Keeper) UnregisterUpstreamEvent(ctx sdk.Context, event types.EventStream
 		return err
 	}
 
-	if !k.HasUpstreamEvent(ctx, event.EventName) {
+	if !k.HasUpstreamEvent(ctx, event.EventName, event.ChannelId) {
 		return types.ErrUpstreamEventNotFound
 	}
 
-	k.RemoveUpstreamEvent(ctx, event.EventName)
+	k.RemoveUpstreamEvent(ctx, event.EventName, event.ChannelId)
 
 	return nil
 }
@@ -100,31 +100,31 @@ func (k Keeper) UnregisterUpstreamEvent(ctx sdk.Context, event types.EventStream
 // SetDownstreamEvent adds a downstream for an event to the store.
 func (k Keeper) SetDownstreamEvent(ctx sdk.Context, event types.EventStream) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetDownstreamEventKey(event.EventName)
+	key := types.GetDownstreamEventKey(event.EventName, event.ChannelId)
 	bz := k.cdc.MustMarshal(&event)
 	store.Set(key, bz)
 }
 
 // HasDownstreamEvent checks if the store has a downstream for the event name.
-func (k Keeper) HasDownstreamEvent(ctx sdk.Context, eventName string) bool {
+func (k Keeper) HasDownstreamEvent(ctx sdk.Context, eventName, channelID string) bool {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetDownstreamEventKey(eventName)
+	key := types.GetDownstreamEventKey(eventName, channelID)
 	return store.Has(key)
 }
 
 // RemoveDownstreamEvent removes a downstream for an event from the store.
-func (k Keeper) RemoveDownstreamEvent(ctx sdk.Context, eventName string) {
+func (k Keeper) RemoveDownstreamEvent(ctx sdk.Context, eventName, channelID string) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetDownstreamEventKey(eventName)
+	key := types.GetDownstreamEventKey(eventName, channelID)
 	if store.Has(key) {
 		store.Delete(key)
 	}
 }
 
 // RemoveDownstreamEvent gets a downstream for an event from the store.
-func (k Keeper) GetDownstreamEvent(ctx sdk.Context, eventName string) (stream types.EventStream, err error) {
+func (k Keeper) GetDownstreamEvent(ctx sdk.Context, eventName, channelID string) (stream types.EventStream, err error) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetDownstreamEventKey(eventName)
+	key := types.GetDownstreamEventKey(eventName, channelID)
 	bz := store.Get(key)
 	if len(bz) == 0 {
 		return stream, types.ErrDownstreamEventNotFound
@@ -158,22 +158,22 @@ func (k Keeper) IterateDownstreamEvents(ctx sdk.Context, handle func(stream type
 // SetUpstreamEvent adds an upstream for an event to the store.
 func (k Keeper) SetUpstreamEvent(ctx sdk.Context, event types.EventStream) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetUpstreamEventKey(event.EventName)
+	key := types.GetUpstreamEventKey(event.EventName, event.ChannelId)
 	bz := k.cdc.MustMarshal(&event)
 	store.Set(key, bz)
 }
 
 // HasUpstreamEvent checks if the store has an upstream for the event name.
-func (k Keeper) HasUpstreamEvent(ctx sdk.Context, eventName string) bool {
+func (k Keeper) HasUpstreamEvent(ctx sdk.Context, eventName, channelID string) bool {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetUpstreamEventKey(eventName)
+	key := types.GetUpstreamEventKey(eventName, channelID)
 	return store.Has(key)
 }
 
 // GetUpstreamEvent gets an upstream for an event from the store.
-func (k Keeper) GetUpstreamEvent(ctx sdk.Context, eventName string) (stream types.EventStream, err error) {
+func (k Keeper) GetUpstreamEvent(ctx sdk.Context, eventName, channelID string) (stream types.EventStream, err error) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetUpstreamEventKey(eventName)
+	key := types.GetUpstreamEventKey(eventName, channelID)
 	bz := store.Get(key)
 	if len(bz) == 0 {
 		return stream, types.ErrUpstreamEventNotFound
@@ -183,9 +183,9 @@ func (k Keeper) GetUpstreamEvent(ctx sdk.Context, eventName string) (stream type
 }
 
 // RemoveUpstreamEvent removes an upstream for an event from the store.
-func (k Keeper) RemoveUpstreamEvent(ctx sdk.Context, eventName string) {
+func (k Keeper) RemoveUpstreamEvent(ctx sdk.Context, eventName, channelID string) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetUpstreamEventKey(eventName)
+	key := types.GetUpstreamEventKey(eventName, channelID)
 	if store.Has(key) {
 		store.Delete(key)
 	}
