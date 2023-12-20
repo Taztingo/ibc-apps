@@ -152,9 +152,7 @@ func (k Keeper) SendEventPacket(ctx sdk.Context, event types.InterchainEvent, so
 		return 0, errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, "module does not own channel capability")
 	}
 
-	packetData := types.InterchainEventPacket{
-		Event: event,
-	}
+	packetData := types.NewInterchainEventPacket(event, "")
 	sequence, err := k.ics4Wrapper.SendPacket(ctx, channelCap, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, packetData.GetBytes())
 	if err != nil {
 		return 0, err
@@ -169,9 +167,7 @@ func (k Keeper) SendRegisterEventPacket(ctx sdk.Context, event types.EventStream
 		return 0, errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, "module does not own channel capability")
 	}
 
-	packetData := types.InterchainRegisterPacket{
-		Event: event.EventName,
-	}
+	packetData := types.NewInterchainRegisterPacket(event.EventName, "")
 	sequence, err := k.ics4Wrapper.SendPacket(ctx, channelCap, sourcePort, event.ChannelId, timeoutHeight, timeoutTimestamp, packetData.GetBytes())
 	if err != nil {
 		return 0, err
@@ -186,9 +182,7 @@ func (k Keeper) SendUnregisterEventPacket(ctx sdk.Context, event types.EventStre
 		return 0, errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, "module does not own channel capability")
 	}
 
-	packetData := types.InterchainUnregisterPacket{
-		Event: event.EventName,
-	}
+	packetData := types.NewInterchainUnregisterPacket(event.EventName, "")
 	sequence, err := k.ics4Wrapper.SendPacket(ctx, channelCap, sourcePort, event.ChannelId, timeoutHeight, timeoutTimestamp, packetData.GetBytes())
 	if err != nil {
 		return 0, err
