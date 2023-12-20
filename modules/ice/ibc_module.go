@@ -71,8 +71,8 @@ func ValidateICEChannelParams(
 	portID string,
 	_ string,
 ) error {
-	if order != channeltypes.UNORDERED {
-		return errors.Wrapf(channeltypes.ErrInvalidChannelOrdering, "expected %s channel, got %s", channeltypes.UNORDERED, order)
+	if order != channeltypes.ORDERED {
+		return errors.Wrapf(channeltypes.ErrInvalidChannelOrdering, "expected %s channel, got %s", channeltypes.ORDERED, order)
 	}
 
 	boundPort := keeper.GetPort(ctx)

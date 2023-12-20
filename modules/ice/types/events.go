@@ -2,7 +2,7 @@ package types
 
 // ICQ Interchain Event events
 const (
-	EventTypePacketError     = "icq_packet_error"
+	EventTypePacketError     = "ice_packet_error"
 	EventTypeInterchainEvent = "interchain_event"
 
 	AttributeKeyAckError      = "error"
