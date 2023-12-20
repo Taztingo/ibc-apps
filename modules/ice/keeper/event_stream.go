@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/ibc-apps/modules/ice/types"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
@@ -33,14 +35,16 @@ func (k Keeper) GetRegisteredEvents(ctx sdk.Context) []types.EventStream {
 // RegisterDownstreamEvent adds a stream to listen to events from.
 func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream, timeoutHeight clienttypes.Height, timeoutTimestamp uint64) error {
 	if err := event.Validate(); err != nil {
+		ctx.Logger().Error("failed to validate register downstream event: " + err.Error())
 		return err
 	}
 
 	if k.HasDownstreamEvent(ctx, event.EventName, event.ChannelId) {
+		ctx.Logger().Info(fmt.Sprintf("downstream event %s is already registered for channel %s", event.EventName, event.ChannelId))
 		return types.ErrDownstreamEventFound
 	}
 
-	// Check if channel exists
+	// TODO Check if channel exists
 
 	k.SetDownstreamEvent(ctx, event)
 
@@ -52,14 +56,16 @@ func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream
 // UnregisterDownstreamEvent removes a stream to listen to events from.
 func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStream, timeoutHeight clienttypes.Height, timeoutTimestamp uint64) error {
 	if err := event.Validate(); err != nil {
+		ctx.Logger().Error("failed to validate unregister downstream event: " + err.Error())
 		return err
 	}
 
 	if !k.HasDownstreamEvent(ctx, event.EventName, event.ChannelId) {
+		ctx.Logger().Info(fmt.Sprintf("downstream event %s is not registered for channel %s", event.EventName, event.ChannelId))
 		return types.ErrDownstreamEventNotFound
 	}
 
-	// Check if channel exists
+	// TODO Check if channel exists
 
 	k.RemoveDownstreamEvent(ctx, event.EventName, event.ChannelId)
 
@@ -70,12 +76,16 @@ func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStre
 // RegisterUpstreamEvent adds a stream to broadcast events to.
 func (k Keeper) RegisterUpstreamEvent(ctx sdk.Context, event types.EventStream) error {
 	if err := event.Validate(); err != nil {
+		ctx.Logger().Error("failed to validate register upstream event: " + err.Error())
 		return err
 	}
 
-	if k.HasDownstreamEvent(ctx, event.EventName, event.ChannelId) {
+	if k.HasUpstreamEvent(ctx, event.EventName, event.ChannelId) {
+		ctx.Logger().Info(fmt.Sprintf("upstream event %s is already registered for channel %s", event.EventName, event.ChannelId))
 		return types.ErrUpstreamEventFound
 	}
+
+	// TODO Check if channel exists
 
 	k.SetUpstreamEvent(ctx, event)
 
@@ -85,10 +95,12 @@ func (k Keeper) RegisterUpstreamEvent(ctx sdk.Context, event types.EventStream) 
 // UnregisterUpstreamEvent removes a stream to broadcast events to.
 func (k Keeper) UnregisterUpstreamEvent(ctx sdk.Context, event types.EventStream) error {
 	if err := event.Validate(); err != nil {
+		ctx.Logger().Error("failed to validate unregister upstream event: " + err.Error())
 		return err
 	}
 
 	if !k.HasUpstreamEvent(ctx, event.EventName, event.ChannelId) {
+		ctx.Logger().Info(fmt.Sprintf("upstream event %s is not registered for channel %s", event.EventName, event.ChannelId))
 		return types.ErrUpstreamEventNotFound
 	}
 
