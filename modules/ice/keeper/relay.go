@@ -92,12 +92,12 @@ func (k Keeper) AttemptRollbackRegisterEventPacket(ctx sdk.Context, packet chann
 		return false
 	}
 
-	k.RemoveDownstreamEvent(ctx, data.Event)
+	k.RemoveDownstreamEvent(ctx, data.Event, packet.DestinationChannel)
 	return true
 }
 
 func (k Keeper) AttemptRollbackUnregisterEventPacket(ctx sdk.Context, packet channeltypes.Packet) bool {
-	var data types.InterchainRegisterPacket
+	var data types.InterchainUnregisterPacket
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		return false
 	}
@@ -115,7 +115,7 @@ func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltype
 
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		// UnmarshalJSON errors are indeterminate and therefore are not wrapped and included in failed acks
-		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICQ packet data")
+		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
 	}
 
 	event := types.EventStream{
@@ -147,17 +147,6 @@ func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) err
 }
 
 func (k Keeper) SendEventPacket(ctx sdk.Context, event types.InterchainEvent, sourceChannel, sourcePort string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64) (uint64, error) {
-
-	/*channel, found := k.channelKeeper.GetChannel(ctx, sourcePort, sourceChannel)
-	if !found {
-		return 0, errorsmod.Wrapf(channeltypes.ErrChannelNotFound, "port ID (%s) channel ID (%s)", sourcePort, sourceChannel)
-	}*/
-
-	// destinationPort := channel.GetCounterparty().GetPortID()
-	// destinationChannel := channel.GetCounterparty().GetChannelID()
-
-	// begin createOutgoingPacket logic
-	// See spec for this logic: https://github.com/cosmos/ibc/tree/master/spec/app/ics-020-fungible-token-transfer#packet-relay
 	channelCap, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, sourceChannel))
 	if !ok {
 		return 0, errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, "module does not own channel capability")
