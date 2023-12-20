@@ -78,10 +78,7 @@ func (k Keeper) AttemptRegisterEventPacket(ctx sdk.Context, packet channeltypes.
 		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICQ packet data")
 	}
 
-	event := types.EventStream{
-		EventName: data.Event,
-		ChannelId: packet.DestinationChannel,
-	}
+	event := *types.NewEventStream(data.Event, packet.DestinationChannel)
 	err := k.RegisterUpstreamEvent(ctx, event)
 	if err != nil {
 		return nil, err
@@ -110,10 +107,7 @@ func (k Keeper) AttemptRollbackUnregisterEventPacket(ctx sdk.Context, packet cha
 
 	ctx.Logger().Info(fmt.Sprintf("rollback: adding downstream event %s on channel %s for packet %v", data.Event, packet.DestinationChannel, packet))
 
-	event := types.EventStream{
-		EventName: data.Event,
-		ChannelId: packet.DestinationChannel,
-	}
+	event := *types.NewEventStream(data.Event, packet.DestinationChannel)
 	k.SetDownstreamEvent(ctx, event)
 	return true
 }
@@ -128,10 +122,7 @@ func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltype
 
 	ctx.Logger().Info(fmt.Sprintf("unregistering event %s on channel %s", data.Event, packet.DestinationChannel))
 
-	event := types.EventStream{
-		EventName: data.Event,
-		ChannelId: packet.DestinationChannel,
-	}
+	event := *types.NewEventStream(data.Event, packet.DestinationChannel)
 	err := k.UnregisterUpstreamEvent(ctx, event)
 	if err != nil {
 		return nil, err
