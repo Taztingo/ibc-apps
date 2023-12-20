@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/cosmos/ibc-apps/modules/ice/types"
 
 	"cosmossdk.io/errors"
@@ -32,10 +34,11 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) ([]byt
 }
 
 func (k Keeper) OnAcknowledgementPacket(ctx sdk.Context, packet channeltypes.Packet, ack channeltypes.Acknowledgement) error {
-	switch ack.Response.(type) {
+	switch res := ack.Response.(type) {
 	case *channeltypes.Acknowledgement_Result:
 		// Nothing needs to be done
 	case *channeltypes.Acknowledgement_Error:
+		ctx.Logger().Error(fmt.Sprintf("received ack error for packet %v: %s", packet, res.Error))
 		k.AttemptRollbackRegisterEventPacket(ctx, packet)
 		k.AttemptRollbackUnregisterEventPacket(ctx, packet)
 	}
@@ -44,6 +47,7 @@ func (k Keeper) OnAcknowledgementPacket(ctx sdk.Context, packet channeltypes.Pac
 }
 
 func (k Keeper) OnTimeoutPacket(ctx sdk.Context, packet channeltypes.Packet) error {
+	ctx.Logger().Info(fmt.Sprintf("received timeout packet for packet: %v", packet))
 	k.AttemptRollbackRegisterEventPacket(ctx, packet)
 	k.AttemptRollbackUnregisterEventPacket(ctx, packet)
 	return nil
@@ -92,6 +96,8 @@ func (k Keeper) AttemptRollbackRegisterEventPacket(ctx sdk.Context, packet chann
 		return false
 	}
 
+	ctx.Logger().Info(fmt.Sprintf("rollback: removing downstream event %s on channel %s for packet %v", data.Event, packet.DestinationChannel, packet))
+
 	k.RemoveDownstreamEvent(ctx, data.Event, packet.DestinationChannel)
 	return true
 }
@@ -101,6 +107,8 @@ func (k Keeper) AttemptRollbackUnregisterEventPacket(ctx sdk.Context, packet cha
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		return false
 	}
+
+	ctx.Logger().Info(fmt.Sprintf("rollback: adding downstream event %s on channel %s for packet %v", data.Event, packet.DestinationChannel, packet))
 
 	event := types.EventStream{
 		EventName: data.Event,
@@ -118,6 +126,8 @@ func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltype
 		return nil, errors.Wrapf(types.ErrUnknownDataType, "cannot unmarshal ICE packet data")
 	}
 
+	ctx.Logger().Info(fmt.Sprintf("unregistering event %s on channel %s", data.Event, packet.DestinationChannel))
+
 	event := types.EventStream{
 		EventName: data.Event,
 		ChannelId: packet.DestinationChannel,
@@ -132,14 +142,16 @@ func (k Keeper) AttemptUnregisterEventPacket(ctx sdk.Context, packet channeltype
 
 func (k Keeper) BroadcastEvent(ctx sdk.Context, event types.InterchainEvent) error {
 	if err := event.Validate(); err != nil {
+		ctx.Logger().Error("failed to validate interchain event: " + err.Error())
 		return err
 	}
 
 	listeners := k.GetListeners(ctx)
+	ctx.Logger().Info(fmt.Sprintf("broadcasting event: %v to listeners: %v", event, listeners))
 	for _, listener := range listeners {
 		_, err := k.SendEventPacket(ctx, event, listener.ChannelId, types.PortID, clienttypes.ZeroHeight(), 0)
 		if err != nil {
-			// Log here
+			ctx.Logger().Error(fmt.Sprintf("failed to send packet to channel %v on port %v. error: %v", listener.ChannelId, types.PortID, err))
 		}
 	}
 
