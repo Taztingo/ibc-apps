@@ -23,17 +23,15 @@ func (k Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.Q
 // Listeners implements types.QueryServer.
 func (k Keeper) Listeners(c context.Context, _ *types.QueryListenersRequest) (*types.QueryListenersResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	listeners := k.GetListeners(ctx)
 	return &types.QueryListenersResponse{
-		Listeners: listeners,
+		Listeners: k.GetListeners(ctx),
 	}, nil
 }
 
 // RegisteredEvents implements types.QueryServer.
 func (k Keeper) RegisteredEvents(c context.Context, _ *types.QueryRegisteredEventsRequest) (*types.QueryRegisteredEventsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	events := k.GetRegisteredEvents(ctx)
 	return &types.QueryRegisteredEventsResponse{
-		Registered: events,
+		Registered: k.GetRegisteredEvents(ctx),
 	}, nil
 }

@@ -18,7 +18,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 )
 
-// Keeper defines the IBC interchain query host keeper
+// Keeper defines the IBC interchain event keeper
 type Keeper struct {
 	storeKey storetypes.StoreKey
 	cdc      codec.BinaryCodec
@@ -36,7 +36,7 @@ type Keeper struct {
 	authority string
 }
 
-// NewKeeper creates a new interchain query Keeper instance
+// NewKeeper creates a new interchain event Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey,
 	ics4Wrapper types.ICS4Wrapper, channelKeeper types.ChannelKeeper, portKeeper types.PortKeeper,
