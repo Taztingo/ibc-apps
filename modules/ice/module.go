@@ -41,7 +41,6 @@ func (AppModuleBasic) RegisterInterfaces(r codectypes.InterfaceRegistry) {
 
 // RegisterLegacyAminoCodec implements module.AppModuleBasic.
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	types.RegisterLegacyAminoCodec(cdc)
 }
 
 // Name implements AppModuleBasic interface
