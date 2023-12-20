@@ -31,6 +31,7 @@ var (
 	UpstreamEventPrefix = []byte{0x03}
 )
 
+// GetUpstreamEventKey creates the storage key for upstream events.
 func GetUpstreamEventKey(eventName, channelID string) []byte {
 	key := UpstreamEventPrefix
 	key = append(key, []byte(eventName)...)
@@ -38,6 +39,7 @@ func GetUpstreamEventKey(eventName, channelID string) []byte {
 	return key
 }
 
+// GetDownstreamEventKey creates the storage key for downstream events.
 func GetDownstreamEventKey(eventName, channelID string) []byte {
 	key := DownstreamEventPrefix
 	key = append(key, []byte(eventName)...)
