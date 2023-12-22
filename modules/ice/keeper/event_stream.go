@@ -3,9 +3,12 @@ package keeper
 import (
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/ibc-apps/modules/ice/types"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 )
 
 // GetListeners returns the streams listening for events from this chain.
@@ -44,11 +47,13 @@ func (k Keeper) RegisterDownstreamEvent(ctx sdk.Context, event types.EventStream
 		return types.ErrDownstreamEventFound
 	}
 
-	// TODO Check if channel exists
+	_, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(types.PortID, event.ChannelId))
+	if !ok {
+		return errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, fmt.Sprintf("module does not own channel capability for port %s on channel %s", types.PortID, event.ChannelId))
+	}
 
 	k.SetDownstreamEvent(ctx, event)
 
-	// Should not always be done
 	_, err := k.SendRegisterEventPacket(ctx, event, "ice-listener", timeoutHeight, timeoutTimestamp)
 	return err
 }
@@ -64,8 +69,6 @@ func (k Keeper) UnregisterDownstreamEvent(ctx sdk.Context, event types.EventStre
 		ctx.Logger().Info(fmt.Sprintf("downstream event %s is not registered for channel %s", event.EventName, event.ChannelId))
 		return types.ErrDownstreamEventNotFound
 	}
-
-	// TODO Check if channel exists
 
 	k.RemoveDownstreamEvent(ctx, event.EventName, event.ChannelId)
 
@@ -85,7 +88,10 @@ func (k Keeper) RegisterUpstreamEvent(ctx sdk.Context, event types.EventStream) 
 		return types.ErrUpstreamEventFound
 	}
 
-	// TODO Check if channel exists
+	_, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(types.PortID, event.ChannelId))
+	if !ok {
+		return errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, fmt.Sprintf("module does not own channel capability for port %s on channel %s", types.PortID, event.ChannelId))
+	}
 
 	k.SetUpstreamEvent(ctx, event)
 
