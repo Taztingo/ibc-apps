@@ -16,6 +16,7 @@ var (
 	ModuleCdc = codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 )
 
+// RegisterInterfaces updates the codec with messages.
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
