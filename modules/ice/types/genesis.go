@@ -30,15 +30,17 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
-	// TODO
-	// For every registered listener
-	// We must verify that each channel exists
-	// We must verify that each event name is valid
+	for _, registered := range gs.Registered {
+		if err := registered.Validate(); err != nil {
+			return err
+		}
+	}
 
-	// TODO
-	// For every registered listener
-	// We must verify that each channel exists
-	// We must verify that each event name is valid
+	for _, listener := range gs.Listeners {
+		if err := listener.Validate(); err != nil {
+			return err
+		}
+	}
 
 	return gs.Params.Validate()
 }
